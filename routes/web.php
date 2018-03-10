@@ -16,7 +16,8 @@ Route::get('/', function () {
 });
 
 Route::resource('/videos', 'VideosController');
-Route::get('/media/{type}/{file}', 'MediaController@returnMedia');
+Route::resource('/media', 'MediasController');
+Route::get('/assets/{type}/{file}', 'AssetsController@returnMedia');
 Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');

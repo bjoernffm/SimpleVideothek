@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Storage;
 
-class MediaController extends Controller
+class AssetsController extends Controller
 {
     /**
      * Create a new controller instance.
