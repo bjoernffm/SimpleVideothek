@@ -1,0 +1,193 @@
+[2018-02-17 14:35:48] Processing: App\Jobs\ProcessVideo
+Converting to mp4 sh: 1: ffmpeg: not found
+chmod: cannot access '/var/www/videothek/app/Jobs/../../public/media/videos/f4b4f3b9-b682-49c7-835e-458e83804b54.mp4': No such file or directory
+[ OKAY ]
+Getting specifications sh: 1: ffprobe: not found
+[ OKAY ]
+Generating thumbnail sh: 1: ffmpeg: not found
+chmod: cannot access '/var/www/videothek/app/Jobs/../../public/media/thumbnails/f4b4f3b9-b682-49c7-835e-458e83804b54.png': No such file or directory
+[ OKAY ]
+Remove tmp files sudo: no tty present and no askpass program specified
+[ OKAY ]
+Save db record [ OKAY ]
+[2018-02-17 14:35:48] Processed:  App\Jobs\ProcessVideo
+[2018-02-17 14:40:03] Processing: App\Jobs\ProcessVideo
+Converting to mp4 [2018-02-17 14:41:33] Processing: App\Jobs\ProcessVideo
+Converting to mp4 [2018-02-17 14:43:03] Processing: App\Jobs\ProcessVideo
+Converting to mp4 [2018-02-17 14:44:34] Processing: App\Jobs\ProcessVideo
+Converting to mp4 [ OKAY ]
+Getting specifications [ OKAY ]
+Generating thumbnail [ OKAY ]
+Remove tmp files sudo: no tty present and no askpass program specified
+[ OKAY ]
+Save db record [ OKAY ]
+[2018-02-17 14:45:22] Processed:  App\Jobs\ProcessVideo
+[ OKAY ]
+Getting specifications [ OKAY ]
+Generating thumbnail [ OKAY ]
+Remove tmp files sudo: no tty present and no askpass program specified
+[ OKAY ]
+Save db record [ OKAY ]
+[2018-02-17 14:47:44] Processed:  App\Jobs\ProcessVideo
+[ OKAY ]
+Getting specifications [ OKAY ]
+Generating thumbnail [ OKAY ]
+Remove tmp files sudo: no tty present and no askpass program specified
+[ OKAY ]
+Save db record [ OKAY ]
+[2018-02-17 14:47:52] Processed:  App\Jobs\ProcessVideo
+[ OKAY ]
+Getting specifications [ OKAY ]
+Generating thumbnail [ OKAY ]
+Remove tmp files sudo: no tty present and no askpass program specified
+[ OKAY ]
+Save db record [ OKAY ]
+[2018-02-17 14:48:21] Processed:  App\Jobs\ProcessVideo
+[2018-02-17 15:02:19] Processing: App\Jobs\ProcessVideo
+Converting to mp4 [ OKAY ]
+Getting specifications [ OKAY ]
+Generating thumbnail [ OKAY ]
+Remove tmp files sudo: no tty present and no askpass program specified
+[ OKAY ]
+Save db record [ OKAY ]
+[2018-02-17 15:29:30] Processed:  App\Jobs\ProcessVideo
+[2018-02-17 15:29:30] Processing: App\Jobs\ProcessVideo
+Converting to mp4 [ OKAY ]
+Getting specifications [ OKAY ]
+Generating thumbnail [ OKAY ]
+Remove tmp files sudo: no tty present and no askpass program specified
+[ OKAY ]
+Save db record [ OKAY ]
+[2018-02-17 15:47:16] Processed:  App\Jobs\ProcessVideo
+[2018-02-17 15:47:16] Processing: App\Jobs\ProcessVideo
+Converting to mp4 [ OKAY ]
+Getting specifications [ OKAY ]
+Generating thumbnail [ OKAY ]
+Remove tmp files sudo: no tty present and no askpass program specified
+[ OKAY ]
+Save db record [ OKAY ]
+[2018-02-17 16:23:54] Processed:  App\Jobs\ProcessVideo
+[2018-02-17 18:15:30] Processing: App\Jobs\ProcessVideo
+Converting to mp4 [ OKAY ]
+Getting specifications [ OKAY ]
+Generating thumbnail [ OKAY ]
+Remove tmp files sudo: no tty present and no askpass program specified
+[ OKAY ]
+Save db record [ OKAY ]
+[2018-02-17 18:22:04] Processed:  App\Jobs\ProcessVideo
+[2018-02-17 18:22:04] Processing: App\Jobs\ProcessVideo
+Converting to mp4 [ OKAY ]
+Getting specifications [ OKAY ]
+Generating thumbnail [ OKAY ]
+Remove tmp files sudo: no tty present and no askpass program specified
+[ OKAY ]
+Save db record [ OKAY ]
+[2018-02-17 18:43:08] Processed:  App\Jobs\ProcessVideo
+[2018-02-17 18:43:08] Processing: App\Jobs\ProcessVideo
+Converting to mp4 [ OKAY ]
+Getting specifications [ OKAY ]
+Generating thumbnail [ OKAY ]
+Remove tmp files sudo: no tty present and no askpass program specified
+[ OKAY ]
+Save db record [ OKAY ]
+[2018-02-17 18:50:21] Processed:  App\Jobs\ProcessVideo
+[2018-02-17 18:50:21] Processing: App\Jobs\ProcessVideo
+Converting to mp4 [ OKAY ]
+Getting specifications [ OKAY ]
+Generating thumbnail [ OKAY ]
+Remove tmp files sudo: no tty present and no askpass program specified
+[ OKAY ]
+Save db record [ OKAY ]
+[2018-02-17 18:56:21] Processed:  App\Jobs\ProcessVideo
+[2018-02-17 18:56:21] Processing: App\Jobs\ProcessVideo
+Converting to mp4 [ OKAY ]
+Getting specifications [ OKAY ]
+Generating thumbnail [ OKAY ]
+Remove tmp files sudo: no tty present and no askpass program specified
+[ OKAY ]
+Save db record [ OKAY ]
+[2018-02-17 19:03:40] Processed:  App\Jobs\ProcessVideo
+[2018-02-18 08:50:27] Processing: App\Jobs\ProcessVideo
+Converting to mp4 [ OKAY ]
+Getting specifications [ OKAY ]
+Generating thumbnail [ OKAY ]
+Remove tmp files [ OKAY ]
+Save db record [ OKAY ]
+[2018-02-18 09:09:16] Processed:  App\Jobs\ProcessVideo
+[2018-02-20 15:51:24] Processing: App\Jobs\ProcessVideo
+Converting to mp4 [ OKAY ]
+Getting specifications [ OKAY ]
+Generating thumbnail [ OKAY ]
+Remove tmp files [ OKAY ]
+Save db record [ OKAY ]
+[2018-02-20 16:02:30] Processed:  App\Jobs\ProcessVideo
+[2018-02-20 16:02:30] Processing: App\Jobs\ProcessVideo
+Converting to mp4 [ OKAY ]
+Getting specifications [ OKAY ]
+Generating thumbnail [ OKAY ]
+Remove tmp files [ OKAY ]
+Save db record [ OKAY ]
+[2018-02-20 16:24:59] Processed:  App\Jobs\ProcessVideo
+[2018-02-20 16:24:59] Processing: App\Jobs\ProcessVideo
+Converting to mp4 [ OKAY ]
+Getting specifications [ OKAY ]
+Generating thumbnail [ OKAY ]
+Remove tmp files [ OKAY ]
+Save db record [ OKAY ]
+[2018-02-20 16:53:43] Processed:  App\Jobs\ProcessVideo
+[2018-02-24 15:13:05] Processing: App\Jobs\ProcessVideo
+Converting to mp4 [ OKAY ]
+Getting specifications [ OKAY ]
+Generating thumbnail [ OKAY ]
+Remove tmp files [ OKAY ]
+Save db record [ OKAY ]
+[2018-02-24 15:34:36] Processed:  App\Jobs\ProcessVideo
+[2018-02-24 15:34:36] Processing: App\Jobs\ProcessVideo
+Converting to mp4 [ OKAY ]
+Getting specifications [ OKAY ]
+Generating thumbnail [ OKAY ]
+Remove tmp files [ OKAY ]
+Save db record [ OKAY ]
+[2018-02-24 15:54:49] Processed:  App\Jobs\ProcessVideo
+[2018-02-24 15:54:49] Processing: App\Jobs\ProcessVideo
+Converting to mp4 [ OKAY ]
+Getting specifications [ OKAY ]
+Generating thumbnail [ OKAY ]
+Remove tmp files [ OKAY ]
+Save db record [ OKAY ]
+[2018-02-24 16:14:47] Processed:  App\Jobs\ProcessVideo
+[2018-02-25 13:50:13] Processing: App\Jobs\ProcessVideo
+Converting to mp4 [ OKAY ]
+Getting specifications [ OKAY ]
+Generating thumbnail [ OKAY ]
+Remove tmp files [ OKAY ]
+Save db record [ OKAY ]
+[2018-02-25 14:22:43] Processed:  App\Jobs\ProcessVideo
+[2018-02-25 14:22:44] Processing: App\Jobs\ProcessVideo
+Converting to mp4 [ OKAY ]
+Getting specifications [ OKAY ]
+Generating thumbnail [ OKAY ]
+Remove tmp files [ OKAY ]
+Save db record [ OKAY ]
+[2018-02-25 14:34:43] Processed:  App\Jobs\ProcessVideo
+[2018-03-02 09:22:54] Processing: App\Jobs\ProcessVideo
+Converting to mp4 [ OKAY ]
+Getting specifications [ OKAY ]
+Generating thumbnail [ OKAY ]
+Remove tmp files [ OKAY ]
+Save db record [ OKAY ]
+[2018-03-02 10:10:59] Processed:  App\Jobs\ProcessVideo
+[2018-03-02 22:42:57] Processing: App\Jobs\ProcessVideo
+Converting to mp4 [ OKAY ]
+Getting specifications [ OKAY ]
+Generating thumbnail [ OKAY ]
+Remove tmp files [ OKAY ]
+Save db record [ OKAY ]
+[2018-03-02 22:47:09] Processed:  App\Jobs\ProcessVideo
+[2018-03-04 19:52:51] Processing: App\Jobs\ProcessVideo
+Converting to mp4 [ OKAY ]
+Getting specifications [ OKAY ]
+Generating thumbnail [ OKAY ]
+Remove tmp files [ OKAY ]
+Save db record [ OKAY ]
+[2018-03-04 20:25:26] Processed:  App\Jobs\ProcessVideo
