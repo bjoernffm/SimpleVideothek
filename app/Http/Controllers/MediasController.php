@@ -29,7 +29,9 @@ class MediasController extends Controller
                     ->with('media', $media)
                     ->with('children', $media->getChildren());
         } else {
-            return $media->getPath();
+            return view('medias.show_video')
+                    ->with('media', $media);
+            #return $media->getPath();
         }
     }
 }

@@ -48,6 +48,7 @@
                         @else
                             <li><a href="{{action('VideosController@create')}}">Upload</a></li>
                             <li><a href="{{action('VideosController@index')}}">Videos</a></li>
+                            <li><a href="{{action('MediasController@index')}}">Media</a></li>
                             <li class="dropdown">
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true">
                                     {{ Auth::user()->name }} <span class="caret"></span>
