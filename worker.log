@@ -191,3 +191,68 @@ Generating thumbnail [ OKAY ]
 Remove tmp files [ OKAY ]
 Save db record [ OKAY ]
 [2018-03-04 20:25:26] Processed:  App\Jobs\ProcessVideo
+[2018-03-13 23:33:23] Processing: App\Jobs\ProcessVideo
+Converting to mp4 [ OKAY ]
+Getting specifications [ OKAY ]
+Generating thumbnail [ OKAY ]
+Remove tmp files [ OKAY ]
+Save db record [ OKAY ]
+[2018-03-14 00:46:28] Processed:  App\Jobs\ProcessVideo
+[2018-03-19 20:31:00] Processing: App\Jobs\ProcessVideo
+Converting to mp4 [ OKAY ]
+Getting specifications [ OKAY ]
+Generating thumbnail [ OKAY ]
+Remove tmp files [ OKAY ]
+Save db record [ OKAY ]
+[2018-03-19 20:48:30] Processed:  App\Jobs\ProcessVideo
+[2018-03-19 22:36:03] Processing: App\Jobs\ProcessVideo
+Converting to mp4 [ OKAY ]
+Getting specifications [ OKAY ]
+Generating thumbnail [ OKAY ]
+Remove tmp files [ OKAY ]
+Save db record [ OKAY ]
+[2018-03-19 22:42:10] Processed:  App\Jobs\ProcessVideo
+[2018-03-19 23:14:40] Processing: App\Jobs\ProcessVideo
+Converting to mp4 [ OKAY ]
+Getting specifications [ OKAY ]
+Generating thumbnail [ OKAY ]
+Remove tmp files [ OKAY ]
+Save db record [ OKAY ]
+[2018-03-19 23:26:26] Processed:  App\Jobs\ProcessVideo
+[2018-03-19 23:26:26] Processing: App\Jobs\ProcessVideo
+Converting to mp4 [ OKAY ]
+Getting specifications [ OKAY ]
+Generating thumbnail [ OKAY ]
+Remove tmp files [ OKAY ]
+Save db record [ OKAY ]
+[2018-03-19 23:56:28] Processed:  App\Jobs\ProcessVideo
+[2018-03-20 15:04:57] Processing: App\Jobs\ProcessVideo
+Converting to mp4 [ OKAY ]
+Getting specifications [ OKAY ]
+Generating thumbnail [ OKAY ]
+Remove tmp files [ OKAY ]
+Save db record [ OKAY ]
+[2018-03-20 15:25:53] Processed:  App\Jobs\ProcessVideo
+[2018-03-20 15:25:53] Processing: App\Jobs\ProcessVideo
+Converting to mp4 [ OKAY ]
+Getting specifications [ OKAY ]
+Generating thumbnail [ OKAY ]
+Remove tmp files [ OKAY ]
+Save db record [ OKAY ]
+[2018-03-20 15:28:10] Processed:  App\Jobs\ProcessVideo
+[2018-03-20 15:28:10] Processing: App\Jobs\ProcessVideo
+Converting to mp4 [ OKAY ]
+Getting specifications [ OKAY ]
+Generating thumbnail [ OKAY ]
+Remove tmp files [ OKAY ]
+Save db record [ OKAY ]
+[2018-03-20 15:48:58] Processed:  App\Jobs\ProcessVideo
+[2018-03-25 19:45:57] Processing: App\Jobs\ProcessVideo
+Converting to mp4 [ OKAY ]
+Getting specifications [ OKAY ]
+Generating thumbnail [ OKAY ]
+Remove tmp files [ OKAY ]
+Save db record [ OKAY ]
+[2018-03-25 19:47:59] Processed:  App\Jobs\ProcessVideo
+[2018-03-25 19:47:59] Processing: App\Jobs\ProcessVideo
+Converting to mp4 
