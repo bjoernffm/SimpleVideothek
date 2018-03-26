@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Media;
 use Ramsey\Uuid\Uuid;
+use App\Jobs\UpdateImdbDetails;
 
 class MediasController extends Controller
 {
@@ -29,9 +30,10 @@ class MediasController extends Controller
                     ->with('media', $media)
                     ->with('children', $media->getChildren());
         } else {
+            #UpdateImdbDetails::dispatch($media);
             return view('medias.show_video')
-                    ->with('media', $media);
-            #return $media->getPath();
+                    ->with('media', $media)
+                    ->with('imdb_details', json_decode($media->imdb_details));
         }
     }
 }
