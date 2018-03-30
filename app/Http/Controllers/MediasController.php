@@ -25,7 +25,7 @@ class MediasController extends Controller
     {
         $media = Media::where('uuid', $id)->firstOrFail();
 
-        if ($media->type == 'CATEGORY') {
+        if ($media->type == 'DIRECTORY') {
             return view('medias.index')
                     ->with('media', $media)
                     ->with('children', $media->getChildren());
@@ -35,5 +35,15 @@ class MediasController extends Controller
                     ->with('media', $media)
                     ->with('imdb_details', json_decode($media->imdb_details));
         }
+    }
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function create()
+    {
+        $root_media = Media::find(1);
+        return view('medias.create')->with('directories', $root_media->getDirectoriesForSelect());
     }
 }

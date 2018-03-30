@@ -22,8 +22,35 @@ class Media extends Model
             }
         }
 
-        $medias = \App\Media::find($childrenIds);
+        $medias = Media::find($childrenIds);
         return $medias;
+    }
+
+    public function getDirectories()
+    {
+        $directories = DB::select('SELECT o.id, COUNT(p.id)-1 AS level FROM media AS n, media AS p,
+        media AS o WHERE o.left BETWEEN p.left AND p.right AND o.left BETWEEN n.left AND n.right AND
+        o.type IN ("DIRECTORY", "COMIC") AND n.id = ? GROUP BY o.id ORDER BY o.left', [$this->id]);
+
+        $buffer = [];
+        foreach($directories as $directory) {
+            $media = Media::find($directory->id);
+            $buffer[] = ['media' => $media, 'level' => $directory->level];
+        }
+
+        return $buffer;
+    }
+
+    public function getDirectoriesForSelect()
+    {
+        $directories = $this->getDirectories();
+        
+        $buffer = [];
+        foreach($directories as $directory) {
+            $buffer[$directory['media']->uuid] = str_repeat('&nbsp;', $directory['level']*4).$directory['media']->title;
+        }
+
+        return $buffer;
     }
 
     public function getPath()
@@ -41,7 +68,7 @@ class Media extends Model
                 $parentIds[] = $parent->id;
         }
 
-        $medias = \App\Media::find($parentIds);
+        $medias = Media::find($parentIds);
         return $medias;
     }
 }
