@@ -1,3 +1,5 @@
 *
 !public/
 !.gitignore
+!pending_videos/
+!media
