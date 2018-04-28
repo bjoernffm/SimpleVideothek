@@ -8,12 +8,13 @@
             <div class="col-xs-6 col-md-2">
                 <a href="{{action('VideosController@show', ['id' => $video->uuid])}}" class="thumbnail">
                     <div
+                        class="lazy"
+                        @if($video->status != 'FINISHED')
+                            data-src="{{ asset('assets/thumbnails/processing_video.png') }}"
+                        @else
+                            data-src="{{ asset('assets/thumbnails/'.$video->thumbnail) }}"
+                        @endif
                         style="
-                            @if($video->status != 'FINISHED')
-                            background-image: url({{ asset('assets/thumbnails/processing_video.png') }});
-                            @else
-                            background-image: url({{ asset('assets/thumbnails/'.$video->thumbnail) }});
-                            @endif
                             background-position: 50% 50%;
                             background-size: cover;
                             width: 100%;

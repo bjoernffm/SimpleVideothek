@@ -8,11 +8,15 @@
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ config('app.name', 'Videothek') }}</title>
+    <title>
+        {{ config('app.name', 'Videothek') }}
+        @if(isset($title) and $title != '')
+            +++ {{$title}}
+        @endif
+    </title>
 
     <!-- Styles -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
-    <link href="http://vjs.zencdn.net/6.6.3/video-js.css" rel="stylesheet">
 </head>
 <body>
     <div id="app">
@@ -46,6 +50,7 @@
                         @guest
                             <li><a href="{{ route('login') }}">Login</a></li>
                         @else
+                            <li><a href="{{action('MediasController@create')}}">Media-Upload</a></li>
                             <li><a href="{{action('VideosController@create')}}">Upload</a></li>
                             <li><a href="{{action('VideosController@index')}}">Videos</a></li>
                             <li><a href="{{action('MediasController@index')}}">Media</a></li>
@@ -80,14 +85,29 @@
 
     <!-- Scripts -->
     <script src="{{ asset('js/app.js') }}"></script>
-    <script src="http://vjs.zencdn.net/6.6.3/video.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jQuery.dotdotdot/3.2.2/jquery.dotdotdot.js"></script>
     <script>
-    	jQuery(document).ready(function( $ ) {
-	   $(".truncate").dotdotdot({
-	   	ellipsis: " ...",
-	   });
-	});
+        jQuery(document).ready(function( $ ) {
+            $(".truncate").dotdotdot({
+                ellipsis: " ..."
+            });
+
+            $(".lazy").lazy({
+                effect: "fadeIn",
+                effectTime: 300
+            });
+
+            $('.comic_carousel').slick({
+                accessibility: true,
+                dots: true,
+                infinite: false,
+                arrows: true,
+                adaptiveHeight: true,
+                speed: 300,
+                slidesToShow: 1,
+                centerMode: true,
+                variableWidth: true
+            });
+        });
     </script>
 </body>
 </html>

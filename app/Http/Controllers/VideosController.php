@@ -82,7 +82,9 @@ class VideosController extends Controller
     public function show($id)
     {
         $video = Video::where('uuid', $id)->firstOrFail();
-        return view('videos.show')->with('video', $video);
+        return view('videos.show')
+                ->with('video', $video)
+                ->with('title', $video->title);
     }
 
     /**

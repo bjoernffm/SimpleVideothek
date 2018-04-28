@@ -1,2 +1,6 @@
 *
 !.gitignore
+!files/
+!previews/
+!thumbnails/
+!videos/

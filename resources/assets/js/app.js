@@ -6,6 +6,10 @@
  */
 
 require('./bootstrap');
+require('./video.js');
+require('./jquery.dotdotdot.js');
+require('./slick.js');
+require('./jquery.lazy.js');
 
 window.Vue = require('vue');
 
