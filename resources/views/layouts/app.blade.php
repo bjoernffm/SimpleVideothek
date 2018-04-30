@@ -107,6 +107,8 @@
                 centerMode: true,
                 variableWidth: true
             });
+
+            @yield('javascript')
         });
     </script>
 </body>

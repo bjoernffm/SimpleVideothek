@@ -60,6 +60,12 @@ class ProcessVideo implements ShouldQueue
         exec('ffmpeg -y -loglevel panic -i '.$mediaDir.'/videos/'.$uuid.'.mp4 -filter:v "thumbnail,scale=320:-2" -frames:v 1 '.$mediaDir.'/thumbnails/'.$uuid.'.png');
         exec('chmod 777 '.$mediaDir.'/thumbnails/'.$uuid.'.png');
         echo '[ OKAY ]'.PHP_EOL;
+
+        /*ffmpeg -i b2e5008f-0d15-4b02-8aac-e76e9ccd169a.mp4 -vf fps=1/30 out%03d.png
+montage *.png -geometry 100x+0+0 -tile x1 overview.png
+rm out*
+
+ffmpeg -i b2e5008f-0d15-4b02-8aac-e76e9ccd169a.mp4 -vf fps=1/30 out%03d.png; montage *.png -geometry 100x+0+0 -tile x1 overview.png; rm out**/
         
         echo 'Remove tmp files ';
         exec('rm '.$inputFile);

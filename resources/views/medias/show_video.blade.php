@@ -19,7 +19,7 @@
 <hr />
 <div class="row">
     <div class="col-sm-8">
-        <video id="my-video" class="video-js" controls preload="auto" width="700" height="350" poster="{{ asset('assets/thumbnails/'.$media->thumbnail) }}" data-setup="{}">
+        <video id="my-video" class="video-js" controls preload="auto" width="100%" height="350" poster="{{ asset('assets/thumbnails/'.$media->thumbnail) }}" data-setup="{}">
             <source src="{{ asset('assets/videos/'.$media->file) }}" type='video/mp4'>
             <p class="vjs-no-js">
                 To view this video please enable JavaScript, and consider upgrading to a web browser that
