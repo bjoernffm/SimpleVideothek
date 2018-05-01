@@ -24,7 +24,8 @@
                 {{Form::select('type', [
                     'DIRECTORY' => 'Directory',
                     'COMIC' => 'Comic (Image container)',
-                    'IMAGE' => 'Image'
+                    'IMAGE' => 'Image',
+                    'VIDEO' => 'Video'
                 ], null, ['class' => 'form-control'])}}
             </div>
             <div class="form-group">

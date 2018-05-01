@@ -8,6 +8,7 @@ use Ramsey\Uuid\Uuid;
 use App\Jobs\UpdateImdbDetails;
 use Illuminate\Support\Facades\DB;
 use App\Jobs\ProcessImage;
+use App\Jobs\ProcessVideo;
 
 class MediasController extends Controller
 {
@@ -36,7 +37,6 @@ class MediasController extends Controller
                     ->with('media', $media)
                     ->with('children', $media->getChildren());
         } else {
-            #UpdateImdbDetails::dispatch($media);
             return view('medias.show_video')
                     ->with('media', $media)
                     ->with('imdb_details', json_decode($media->imdb_details));
@@ -69,13 +69,17 @@ class MediasController extends Controller
         ]);
 
         $uuid = Uuid::uuid4()->toString();
-        var_dump($uuid);
 
-        if ($request->file('media')->isValid()) {
-            $path = $request->media->storeAs('pending', $uuid.'.'.$request->media->extension());
-            $path = storage_path('app/'.$path);
-            exec('chmod 777 '.$path);
+        if (!$request->file('media')->isValid()) {
+            abort(500, 'There was a problem uploading your file');
         }
+
+        $fileType = $request->file('media')->getMimeType();
+        $fileType = explode('/', $fileType)[0];
+
+        $path = $request->media->storeAs('pending', $uuid.'.'.$request->media->extension());
+        $path = storage_path('app/'.$path);
+        exec('chmod 777 '.$path);
 
         $root = Media::where('uuid', $request->input('root'))->firstOrFail();
 
@@ -93,7 +97,11 @@ class MediasController extends Controller
         $media->file = $uuid.'.'.$request->media->extension();
         $media->save();
 
-        ProcessImage::dispatch($media);
+        if ($media->type == 'VIDEO') {
+            ProcessVideo::dispatch($media);
+        } else if ($media->type == 'IMAGE') {
+            ProcessImage::dispatch($media);
+        }
 
         return redirect()->action('MediasController@create');
     }
