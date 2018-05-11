@@ -5,10 +5,10 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Media;
 use Ramsey\Uuid\Uuid;
-use App\Jobs\UpdateImdbDetails;
 use Illuminate\Support\Facades\DB;
 use App\Jobs\ProcessImage;
 use App\Jobs\ProcessVideo;
+use App\Jobs\UpdateImdbDetails;
 
 class MediasController extends Controller
 {
@@ -27,6 +27,7 @@ class MediasController extends Controller
     public function show($id)
     {
         $media = Media::where('uuid', $id)->firstOrFail();
+        #return $media;
 
         if ($media->type == 'DIRECTORY') {
             return view('medias.index')
@@ -87,6 +88,10 @@ class MediasController extends Controller
             ->where('right', '>=', $root->right)
             ->increment('right', 2);
 
+        DB::table('media')
+            ->where('left', '>', $root->right)
+            ->increment('left', 2);
+
         $media = new Media();
         $media->uuid = $uuid;
         $media->title = $request->input('title');
@@ -95,10 +100,16 @@ class MediasController extends Controller
         $media->status = 'PENDING';
         $media->type = $request->input('type');
         $media->file = $uuid.'.'.$request->media->extension();
+        if (trim($request->input('imdb_id')) != '') {
+            $media->imdb_id = trim($request->input('imdb_id'));
+        }
         $media->save();
 
         if ($media->type == 'VIDEO') {
             ProcessVideo::dispatch($media);
+            if (trim($request->input('imdb_id')) != '') {
+                UpdateImdbDetails::dispatch($media);
+            }
         } else if ($media->type == 'IMAGE') {
             ProcessImage::dispatch($media);
         }

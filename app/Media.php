@@ -61,14 +61,14 @@ class Media extends Model
                                 WHERE
                                     n.left BETWEEN p.left AND p.right AND
                                     n.id = ?
-                                ORDER BY n.left', [$this->id]);
-        
-        $parentIds = [];
+                                ORDER BY p.left', [$this->id]);
+
+        $medias = [];
         foreach($parents as $parent) {
                 $parentIds[] = $parent->id;
         }
 
-        $medias = Media::find($parentIds);
+        $medias = Media::find($parentIds)->sortBy('left');
         return $medias;
     }
 }

@@ -62,7 +62,7 @@ class ProcessVideo implements ShouldQueue
         echo '[ OKAY ]'.PHP_EOL;
 
         echo 'Generating seek thumbnail'.PHP_EOL;
-        $seconds = 15;
+        $seconds = env('VIDEO_SEEK_THUMBNAILS_SECONDS', 15);
         echo "\t".'Generating thumbnails every '.$seconds.' seconds ';
         exec('ffmpeg  -loglevel panic -i '.$mediaDir.'/files/'.$uuid.'.mp4 -vf fps=1/'.$seconds.' /tmp/'.$uuid.'_%03d.png');
         echo '[ OKAY ]'.PHP_EOL;

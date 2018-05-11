@@ -51,7 +51,6 @@
                             <li><a href="{{ route('login') }}">Login</a></li>
                         @else
                             <li><a href="{{action('MediasController@create')}}">Media-Upload</a></li>
-                            <li><a href="{{action('VideosController@create')}}">Upload</a></li>
                             <li><a href="{{action('VideosController@index')}}">Videos</a></li>
                             <li><a href="{{action('MediasController@index')}}">Media</a></li>
                             <li class="dropdown">

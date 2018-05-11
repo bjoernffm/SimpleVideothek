@@ -32,48 +32,6 @@ class VideosController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        return view('videos.create');
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        $this->validate($request, [
-            'title' => 'required',
-            'video' => 'required|mimetypes:video/*'
-        ]);
-        
-        $uuid = Uuid::uuid4()->toString();
-        
-        if ($request->file('video')->isValid()) {
-            $path = $request->video->storeAs('pending_videos', $uuid.'.'.$request->video->extension());
-            $path = storage_path('app/'.$path);
-            exec('chmod 777 '.$path);
-        }
-        
-        $video = new Video();
-        $video->uuid = $uuid; 
-        $video->title = $request->input('title');
-        $video->video = $uuid.'.'.$request->video->extension();
-        $video->save();
-        
-        ProcessVideo::dispatch($video); 
-        
-        return redirect()->action('VideosController@index');
-    }
-
-    /**
      * Display the specified resource.
      *
      * @param  int  $id
@@ -97,18 +55,6 @@ class VideosController extends Controller
     {
         $video = Video::where('uuid', $id)->firstOrFail();
         return view('videos.edit')->with('video', $video);
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
     }
 
     /**
