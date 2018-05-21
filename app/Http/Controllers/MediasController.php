@@ -9,6 +9,11 @@ use Illuminate\Support\Facades\DB;
 use App\Jobs\ProcessImage;
 use App\Jobs\ProcessVideo;
 use App\Jobs\UpdateImdbDetails;
+use ZipArchive;
+use Symfony\Component\Yaml\Yaml;
+use Symfony\Component\Yaml\Exception\ParseException;
+use finfo;
+use Illuminate\Support\Facades\Storage;
 
 class MediasController extends Controller
 {
@@ -27,7 +32,6 @@ class MediasController extends Controller
     public function show($id)
     {
         $media = Media::where('uuid', $id)->firstOrFail();
-        #return $media;
 
         if ($media->type == 'DIRECTORY') {
             return view('medias.index')
@@ -66,51 +70,146 @@ class MediasController extends Controller
             'title' => 'required',
             'type' => 'required',
             'root' => 'required',
-            'media' => 'required|mimetypes:video/*,image/*'
+            'media' => 'mimetypes:video/*,image/*,application/zip'
         ]);
 
         $uuid = Uuid::uuid4()->toString();
 
-        if (!$request->file('media')->isValid()) {
-            abort(500, 'There was a problem uploading your file');
-        }
-
-        $fileType = $request->file('media')->getMimeType();
-        $fileType = explode('/', $fileType)[0];
-
-        $path = $request->media->storeAs('pending', $uuid.'.'.$request->media->extension());
-        $path = storage_path('app/'.$path);
-        exec('chmod 777 '.$path);
-
         $root = Media::where('uuid', $request->input('root'))->firstOrFail();
-
-        DB::table('media')
-            ->where('right', '>=', $root->right)
-            ->increment('right', 2);
-
-        DB::table('media')
-            ->where('left', '>', $root->right)
-            ->increment('left', 2);
 
         $media = new Media();
         $media->uuid = $uuid;
         $media->title = $request->input('title');
-        $media->left = $root->right;
-        $media->right = $root->right+1;
         $media->status = 'PENDING';
         $media->type = $request->input('type');
-        $media->file = $uuid.'.'.$request->media->extension();
-        if (trim($request->input('imdb_id')) != '') {
-            $media->imdb_id = trim($request->input('imdb_id'));
-        }
-        $media->save();
 
-        if ($media->type == 'VIDEO') {
+        if ($media->type == 'DIRECTORY') {
+            $media->status = 'FINISHED';
+            $root->appendChild($media);
+        } else if ($media->type == 'COMIC') {
+            if (!$request->file('media')->isValid()) {
+                abort(500, 'There was a problem uploading your file');
+            }
+
+            if ($request->file('media')->getMimeType() != 'application/zip') {
+                abort(400, 'Only zip files are allowed');
+            }
+
+            $za = new ZipArchive();
+            $za->open($request->media->path());
+
+            $images = [];
+            $yamlConfig = null;
+
+            $finfo = new finfo(FILEINFO_MIME);
+
+            for($i = 0; $i < $za->numFiles; $i++) {
+                $name = $za->getNameIndex($i);
+                $content = $za->getFromIndex($i);
+
+                if ($name == 'content.yaml') {
+                    try {
+                        $yamlConfig = Yaml::parse($content);
+                    } catch (ParseException $exception) {
+                        abort(400, 'Unable to parse content.yaml file: '.$exception->getMessage());
+                    }
+                } else {
+                    $mimetype = $finfo->buffer($content);
+                    $mimetype = explode('/', $mimetype)[0];
+
+                    if ($mimetype != 'image') {
+                        abort(400, 'Only images are allowed: '.$name);
+                    }
+
+                    $images[] = [
+                        'name' => $name,
+                        'content' => $content
+                    ];
+                }
+            }
+
+            // sorting the contents
+            usort($images, function($a, $b)
+            {
+                if ($a['name'] == $b['name']) {
+                    return 0;
+                }
+                return ($a['name'] < $b['name']) ? -1 : 1;
+            });
+
+            if ($yamlConfig == null) {
+                abort(400, 'File content.yaml is missing');
+            }
+
+            if ($yamlConfig['image_count'] != count($images)) {
+                abort(400, 'Image count is not equal in zip and content.yaml');
+            }
+
+            $root->appendChild($media);
+
+            for($i = 0; $i < count($images); $i++) {
+                $extension = explode('.', $images[$i]['name']);
+                $extension = $extension[count($extension)-1];
+
+                $image = new Media();
+                $image->uuid = Uuid::uuid4()->toString();
+                $image->title = sprintf($yamlConfig['image_title'], $i+1);
+                $image->status = 'PENDING';
+                $image->type = 'IMAGE';
+                $image->file = $image->uuid.'.'.$extension;
+
+                $media->appendChild($image);
+                Storage::put('pending/'.$image->uuid.'.'.$extension, $images[$i]['content']);
+                ProcessImage::dispatch($image);
+
+                // for previewing the first page
+                if ($i == 0) {
+                    $media->file = $media->uuid.'.'.$extension;
+                    Storage::put('pending/'.$media->uuid.'.'.$extension, $images[$i]['content']);
+                    $media->save();
+                    ProcessImage::dispatch($media);
+                }
+            }
+        } else if ($media->type == 'VIDEO') {
+            if (!$request->file('media')->isValid()) {
+                abort(500, 'There was a problem uploading your file');
+            }
+
+            $fileType = $request->file('media')->getMimeType();
+            $fileType = explode('/', $fileType)[0];
+
+            $path = $request->media->storeAs('pending', $uuid.'.'.$request->media->extension());
+            $path = storage_path('app/'.$path);
+            exec('chmod 777 '.$path);
+
+            $media->file = $uuid.'.'.$request->media->extension();
+            if (trim($request->input('imdb_id')) != '') {
+                $media->imdb_id = trim($request->input('imdb_id'));
+            }
+            $media->status = 'PENDING';
+
             ProcessVideo::dispatch($media);
             if (trim($request->input('imdb_id')) != '') {
                 UpdateImdbDetails::dispatch($media);
             }
         } else if ($media->type == 'IMAGE') {
+            if (!$request->file('media')->isValid()) {
+                abort(500, 'There was a problem uploading your file');
+            }
+
+            $fileType = $request->file('media')->getMimeType();
+            $fileType = explode('/', $fileType)[0];
+
+            $path = $request->media->storeAs('pending', $uuid.'.'.$request->media->extension());
+            $path = storage_path('app/'.$path);
+            exec('chmod 777 '.$path);
+
+            $media->file = $uuid.'.'.$request->media->extension();
+            if (trim($request->input('imdb_id')) != '') {
+                $media->imdb_id = trim($request->input('imdb_id'));
+            }
+            $media->status = 'PENDING';
+
             ProcessImage::dispatch($media);
         }
 

@@ -4,11 +4,11 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class Media extends Model
 {
-    //
-    public function getChildren()
+    public function getChildren($all = false)
     {
         $children = DB::select('SELECT o.id, COUNT(p.id)-1 AS level FROM media AS n, media AS p,
         media AS o WHERE o.left BETWEEN p.left AND p.right AND o.left BETWEEN n.left AND n.right AND
@@ -17,7 +17,7 @@ class Media extends Model
         $childrenIds = [];
         $level = $children[0]->level+1;
         foreach($children as $child) {
-            if ($child->level == $level) {
+            if ($child->level == $level or $all) {
                 $childrenIds[] = $child->id;
             }
         }
@@ -70,5 +70,61 @@ class Media extends Model
 
         $medias = Media::find($parentIds)->sortBy('left');
         return $medias;
+    }
+
+    public function appendChild(Media $media)
+    {
+        DB::table('media')
+            ->where('right', '>=', $this->right)
+            ->increment('right', 2);
+
+        DB::table('media')
+            ->where('left', '>', $this->right)
+            ->increment('left', 2);
+
+        $media->left = $this->right;
+        $media->right = $this->right+1;
+        $media->save();
+
+        $this->right += 2;
+    }
+
+    public function delete()
+    {
+        parent::delete();
+
+        // rise children to current level
+        DB::table('media')
+            ->whereBetween('left', [$this->left, $this->right])
+            ->decrement('left', 1);
+        DB::table('media')
+            ->whereBetween('left', [$this->left, $this->right])
+            ->decrement('right', 1);
+
+        // repair table
+        DB::table('media')
+            ->where('left', '>', $this->right)
+            ->decrement('left', 2);
+        DB::table('media')
+            ->where('right', '>', $this->right)
+            ->decrement('right', 2);
+
+        // deleting possible files
+        try {
+            if ($this->file != '') {
+                Storage::delete('media/files/' . $this->file);
+                Storage::delete([
+                    'media/files/' . $this->file,
+                    'pending/' .  $this->file
+                ]);
+            }
+
+            if ($this->thumbnail != '') {
+                Storage::delete([
+                    'media/seek_thumbnails/' .  $this->thumbnail,
+                    'media/thumbnails/' .  $this->thumbnail
+                ]);
+            }
+        } catch(Exception $e) {}
     }
 }

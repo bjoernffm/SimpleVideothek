@@ -8,6 +8,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use App\Media;
+use \Exception;
 
 class ProcessVideo implements ShouldQueue
 {
@@ -38,6 +39,9 @@ class ProcessVideo implements ShouldQueue
         
         echo 'Converting to mp4 ';
         exec('ffmpeg -y -i '.$inputFile.' -loglevel panic -strict -2 -filter:v scale=640:-2 '.$mediaDir.'/files/'.$uuid.'.mp4');
+        echo '[ OKAY ]'.PHP_EOL;
+
+        echo 'Change mode to 777 ';
         exec('chmod 777 '.$mediaDir.'/files/'.$uuid.'.mp4');
         echo '[ OKAY ]'.PHP_EOL;
         
