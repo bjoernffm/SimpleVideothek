@@ -178,6 +178,10 @@ class MediasController extends Controller
             $fileType = $request->file('media')->getMimeType();
             $fileType = explode('/', $fileType)[0];
 
+            if ($fileType != 'video') {
+                abort(400, 'Only video files are allowed');
+            }
+
             $path = $request->media->storeAs('pending', $uuid.'.'.$request->media->extension());
             $path = storage_path('app/'.$path);
             exec('chmod 777 '.$path);
@@ -186,7 +190,8 @@ class MediasController extends Controller
             if (trim($request->input('imdb_id')) != '') {
                 $media->imdb_id = trim($request->input('imdb_id'));
             }
-            $media->status = 'PENDING';
+
+            $root->appendChild($media);
 
             ProcessVideo::dispatch($media);
             if (trim($request->input('imdb_id')) != '') {
@@ -200,15 +205,16 @@ class MediasController extends Controller
             $fileType = $request->file('media')->getMimeType();
             $fileType = explode('/', $fileType)[0];
 
+            if ($fileType != 'image') {
+                abort(400, 'Only image files are allowed');
+            }
+
             $path = $request->media->storeAs('pending', $uuid.'.'.$request->media->extension());
             $path = storage_path('app/'.$path);
             exec('chmod 777 '.$path);
 
             $media->file = $uuid.'.'.$request->media->extension();
-            if (trim($request->input('imdb_id')) != '') {
-                $media->imdb_id = trim($request->input('imdb_id'));
-            }
-            $media->status = 'PENDING';
+            $root->appendChild($media);
 
             ProcessImage::dispatch($media);
         }

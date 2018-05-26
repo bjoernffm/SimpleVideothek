@@ -7,13 +7,17 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Symfony\Component\Process\Process;
+use Symfony\Component\Process\Exception\ProcessFailedException;
 use App\Media;
-use \Exception;
 
 class ProcessVideo implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
     
+    public $timeout = 7200;
+    public $tries = 1;
+
     protected $media;
 
     /**
@@ -38,12 +42,32 @@ class ProcessVideo implements ShouldQueue
         $uuid = $this->media->uuid;
         
         echo 'Converting to mp4 ';
-        exec('ffmpeg -y -i '.$inputFile.' -loglevel panic -strict -2 -filter:v scale=640:-2 '.$mediaDir.'/files/'.$uuid.'.mp4');
-        echo '[ OKAY ]'.PHP_EOL;
+        #exec('ffmpeg -y -i '.$inputFile.' -loglevel panic -strict -2 -filter:v scale=640:-2 '.$mediaDir.'/files/'.$uuid.'.mp4');
+        $process = new Process('ffmpeg -y -i '.$inputFile.' -loglevel panic -strict -2 -filter:v scale=640:-2 '.$mediaDir.'/files/'.$uuid.'.mp4');
+        $process->start();
+
+        $i = 0;
+        while ($process->isRunning()) {
+            echo 'Running '.$i.PHP_EOL;
+            $i++;
+            sleep(10);
+        }
+
+        if ($process->isSuccessful()) {
+            echo '[ OKAY ]'.PHP_EOL;
+        } else {
+            throw new ProcessFailedException($process);
+        }
 
         echo 'Change mode to 777 ';
-        exec('chmod 777 '.$mediaDir.'/files/'.$uuid.'.mp4');
-        echo '[ OKAY ]'.PHP_EOL;
+        $process = new Process('chmod 777 '.$mediaDir.'/files/'.$uuid.'.mp4');
+        $process->run();
+
+        if ($process->isSuccessful()) {
+            echo '[ OKAY ]'.PHP_EOL;
+        } else {
+            throw new ProcessFailedException($process);
+        }
         
         echo 'Getting specifications ';
         $output = [];
@@ -60,6 +84,7 @@ class ProcessVideo implements ShouldQueue
         ];
         echo '[ OKAY ]'.PHP_EOL;
         
+        /*
         echo 'Generating thumbnail ';
         exec('ffmpeg -y -loglevel panic -i '.$mediaDir.'/files/'.$uuid.'.mp4 -filter:v "thumbnail,scale=320:-2" -frames:v 1 '.$mediaDir.'/thumbnails/'.$uuid.'.png');
         exec('chmod 777 '.$mediaDir.'/thumbnails/'.$uuid.'.png');
@@ -103,6 +128,7 @@ class ProcessVideo implements ShouldQueue
         exec('montage /tmp/'.$uuid.'_*.png -geometry 100x+0+0 -tile x1 '.$mediaDir.'/seek_thumbnails/'.$uuid.'.png');
         exec('rm /tmp/'.$uuid.'_*.png');
         echo '[ OKAY ]'.PHP_EOL;
+        */
         
         echo 'Remove tmp files ';
         exec('rm '.$inputFile);
@@ -110,10 +136,13 @@ class ProcessVideo implements ShouldQueue
         
         echo 'Save db record ';
         $this->media->file = $uuid.'.mp4';
-        $this->media->thumbnail = $uuid.'.png';
         $this->media->length = $specs['length'];
         $this->media->status = 'FINISHED';
         $this->media->save();
+        echo '[ OKAY ]'.PHP_EOL;
+
+        echo 'Dispatch thumbnail creation ';
+        CreateThumbnail::dispatch($this->media);
         echo '[ OKAY ]'.PHP_EOL;
     }
 }

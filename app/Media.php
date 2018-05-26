@@ -74,57 +74,84 @@ class Media extends Model
 
     public function appendChild(Media $media)
     {
-        DB::table('media')
-            ->where('right', '>=', $this->right)
-            ->increment('right', 2);
+        DB::transaction(function() use ($media) {
+            DB::table('media')
+                ->where('right', '>=', $this->right)
+                ->increment('right', 2);
 
-        DB::table('media')
-            ->where('left', '>', $this->right)
-            ->increment('left', 2);
+            DB::table('media')
+                ->where('left', '>', $this->right)
+                ->increment('left', 2);
 
-        $media->left = $this->right;
-        $media->right = $this->right+1;
-        $media->save();
+            $media->left = $this->right;
+            $media->right = $this->right+1;
+            $media->save();
 
-        $this->right += 2;
+            $this->right += 2;
+        });
     }
 
     public function delete()
     {
-        parent::delete();
+        DB::transaction(function() {
+            parent::delete();
 
-        // rise children to current level
-        DB::table('media')
-            ->whereBetween('left', [$this->left, $this->right])
-            ->decrement('left', 1);
-        DB::table('media')
-            ->whereBetween('left', [$this->left, $this->right])
-            ->decrement('right', 1);
+            // rise children to current level
+            DB::table('media')
+                ->whereBetween('left', [$this->left, $this->right])
+                ->decrement('left', 1);
+            DB::table('media')
+                ->whereBetween('left', [$this->left, $this->right])
+                ->decrement('right', 1);
 
-        // repair table
-        DB::table('media')
-            ->where('left', '>', $this->right)
-            ->decrement('left', 2);
-        DB::table('media')
-            ->where('right', '>', $this->right)
-            ->decrement('right', 2);
+            // repair table
+            DB::table('media')
+                ->where('left', '>', $this->right)
+                ->decrement('left', 2);
+            DB::table('media')
+                ->where('right', '>', $this->right)
+                ->decrement('right', 2);
 
-        // deleting possible files
-        try {
-            if ($this->file != '') {
-                Storage::delete('media/files/' . $this->file);
-                Storage::delete([
-                    'media/files/' . $this->file,
-                    'pending/' .  $this->file
-                ]);
-            }
+            // deleting possible files
+            try {
+                if ($this->file != '') {
+                    Storage::delete('media/files/' . $this->file);
+                    Storage::delete([
+                        'media/files/' . $this->file,
+                        'pending/' .  $this->file
+                    ]);
+                }
 
-            if ($this->thumbnail != '') {
-                Storage::delete([
-                    'media/seek_thumbnails/' .  $this->thumbnail,
-                    'media/thumbnails/' .  $this->thumbnail
-                ]);
-            }
-        } catch(Exception $e) {}
+                if ($this->thumbnail != '') {
+                    Storage::delete([
+                        'media/seek_thumbnails/' .  $this->thumbnail,
+                        'media/thumbnails/' .  $this->thumbnail
+                    ]);
+                }
+            } catch(Exception $e) {}
+        });
+    }
+
+    public function getFormattedLengthAttribute()
+    {
+        if ($this->length == null) {
+            return '';
+        }
+
+        return $this->formatTime($this->length);
+    }
+
+    protected function formatTime($secondsParam)
+    {
+        $seconds = $secondsParam % 60;
+        $minutes = ($secondsParam/60) % 60;
+        $hours = ($secondsParam/3600) % 24;
+        $days = ($secondsParam/86400) % 365;
+
+        if ($days > 0) {
+            return sprintf('%03d:%02d:%02d:%02d', $days, $hours, $minutes, $seconds);
+        }
+
+        return sprintf('%02d:%02d:%02d', $hours, $minutes, $seconds);
     }
 }

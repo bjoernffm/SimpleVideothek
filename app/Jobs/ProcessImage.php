@@ -8,6 +8,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use App\Media;
+use App\Jobs\CreateThumbnail;
 
 class ProcessImage implements ShouldQueue
 {
@@ -41,20 +42,18 @@ class ProcessImage implements ShouldQueue
         exec('chmod 777 '.$mediaDir.'/files/'.$uuid.'.png');
         echo '[ OKAY ]'.PHP_EOL;
 
-        echo 'Generating thumbnail ';
-        exec('convert '.$inputFile.' -resize 320 '.$mediaDir.'/thumbnails/'.$uuid.'.png');
-        exec('chmod 777 '.$mediaDir.'/thumbnails/'.$uuid.'.png');
-        echo '[ OKAY ]'.PHP_EOL;
-
         echo 'Remove tmp files ';
         exec('rm '.$inputFile);
         echo '[ OKAY ]'.PHP_EOL;
 
         echo 'Save db record ';
         $this->media->file = $uuid.'.png';
-        $this->media->thumbnail = $uuid.'.png';
         $this->media->status = 'FINISHED';
         $this->media->save();
+        echo '[ OKAY ]'.PHP_EOL;
+
+        echo 'Dispatch thumbnail creation ';
+        CreateThumbnail::dispatch($this->media);
         echo '[ OKAY ]'.PHP_EOL;
     }
 }
