@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 use App\Media;
 use App\Jobs\CreateThumbnail;
+use App\Jobs\CreateSeekImage;
 
 class RefreshThumbnails extends Command
 {
@@ -13,7 +14,8 @@ class RefreshThumbnails extends Command
      *
      * @var string
      */
-    protected $signature = 'media:refresh-thumbnails';
+    protected $signature = 'media:refresh-thumbnails
+                            {id? : The ID of the media e.g. da7fa978-148c-11e8-946f-00012e3bc7c}';
 
     /**
      * The console command description.
@@ -39,11 +41,22 @@ class RefreshThumbnails extends Command
      */
     public function handle()
     {
-        $medias = Media::all();
-        #$medias = [Media::find(321)];
+        $id = $this->argument('id');
+
+        if ($id == null) {
+            $medias = Media::all();
+        } else {
+            $medias = [Media::where('uuid', $id)->first()];
+        }
+
         foreach($medias as $media) {
             CreateThumbnail::dispatch($media);
+
+            if ($media->type == 'VIDEO') {
+                CreateSeekImage::dispatch($media);
+            }
         }
+
         $this->info('All media dispatched for thumbnail refresh');
     }
 }

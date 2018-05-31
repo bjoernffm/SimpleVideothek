@@ -19,6 +19,10 @@
 @import url("//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.css");
 @import url("//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick-theme.min.css");
 
+dd {
+     margin-bottom: .5rem
+}
+
 .comic_carousel {
     .slick-center img {
         opacity:1;

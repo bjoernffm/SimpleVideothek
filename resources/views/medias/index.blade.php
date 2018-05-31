@@ -35,7 +35,11 @@
                                 width: 100%;
                                 height: 100px;"></div>
                         <div class="title truncate" title="{{$child->title}}">{{$child->title}}</div>
-                        <div class="subtitle">{{$child->formatted_length}}</div>
+                        <div class="subtitle">
+                            @if($child->formatted_length != "")
+                            {{$child->formatted_length}} <i class="far fa-clock"></i>
+                            @endif
+                        </div>
                     </a>
                 </div>
             </div>

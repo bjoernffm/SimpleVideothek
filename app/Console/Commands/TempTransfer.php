@@ -14,7 +14,7 @@ class TempTransfer extends Command
      *
      * @var string
      */
-    protected $signature = 'tmp:transfer';
+    protected $signature = 'tmp:size';
 
     /**
      * The console command description.
@@ -40,21 +40,20 @@ class TempTransfer extends Command
      */
     public function handle()
     {
-        $root = Media::where('uuid', 'b5b50809-9ff5-4468-bb11-2898c7785134')->firstOrFail();
-        $videos = Video::all();
+        $medias = Media::all();
 
-        foreach($videos as $video) {
-            try {
-                $this->info('Processing '.$video->uuid);
-                $media = new Media();
-                $media->uuid = $video->uuid;
-                $media->title = $video->title;
-                $media->status = $video->status;
-                $media->type = 'VIDEO';
-                $media->file = $video->video;
-                $media->length = $video->length;
-                $root->appendChild($media);
-            } catch(Exception $e) {}
+        foreach($medias as $media) {
+            if ($media->file != null) {
+                $inputFile = storage_path().'/app/media/files/'.$media->file;
+
+                if (file_exists($inputFile)) {
+                    $media->size = filesize($inputFile);
+                    $media->save();
+                } else {
+                    $this->error('No file found for '.$media->id);
+                    exit();
+                }
+            }
         }
     }
 }

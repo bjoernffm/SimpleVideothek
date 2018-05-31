@@ -47,6 +47,7 @@ class MediasController extends Controller
                     ->with('imdb_details', json_decode($media->imdb_details));
         }
     }
+
     /**
      * Show the form for creating a new resource.
      *
@@ -56,6 +57,46 @@ class MediasController extends Controller
     {
         $root_media = Media::find(1);
         return view('medias.create')->with('directories', $root_media->getDirectoriesForSelect());
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function edit($id)
+    {
+        $media = Media::where('uuid', $id)->firstOrFail();
+        return view('medias.edit.directory')->with('media', $media);
+    }
+
+    /**
+     * Update the given user.
+     *
+     * @param  Request  $request
+     * @param  string  $id
+     * @return Response
+     */
+    public function update(Request $request, $id)
+    {
+        $media = Media::where('uuid', $id)->firstOrFail();
+
+        if ($media->type == 'DIRECTORY') {
+            $this->validate($request, [
+                'title' => 'required',
+                'thumbnail' => 'required'
+            ]);
+
+            $original = $request->input('thumbnail');
+            $media->thumbnail = $media->uuid.'.png';
+
+            Storage::delete('media/thumbnails/'.$media->thumbnail);
+            Storage::copy('media/thumbnails/'.$original, 'media/thumbnails/'.$media->thumbnail);
+            $media->save();
+        }
+
+        return redirect()->action('MediasController@index');
     }
 
     /**
@@ -160,12 +201,14 @@ class MediasController extends Controller
 
                 $media->appendChild($image);
                 Storage::put('pending/'.$image->uuid.'.'.$extension, $images[$i]['content']);
+                exec('chmod 777 '.storage_path().'/app/pending/'.$image->uuid.'.'.$extension);
                 ProcessImage::dispatch($image);
 
                 // for previewing the first page
                 if ($i == 0) {
                     $media->file = $media->uuid.'.'.$extension;
                     Storage::put('pending/'.$media->uuid.'.'.$extension, $images[$i]['content']);
+                    exec('chmod 777 '.storage_path().'/app/pending/'.$media->uuid.'.'.$extension);
                     $media->save();
                     ProcessImage::dispatch($media);
                 }

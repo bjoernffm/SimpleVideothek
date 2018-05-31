@@ -47,10 +47,14 @@ class CreateThumbnail implements ShouldQueue
         Storage::delete($mediaDir.'/thumbnails/'.$uuid.'.png');
 
         echo 'Generating thumbnail ';
-        if ($this->media->type == 'IMAGE') {
+        if ($this->media->type == 'DIRECTORY') {
+            exec('convert '.$inputFile.' -resize 320 '.$mediaDir.'/thumbnails/'.$uuid.'.png');
+        } else if ($this->media->type == 'COMIC ') {
+            exec('convert '.$inputFile.' -resize 320 '.$mediaDir.'/thumbnails/'.$uuid.'.png');
+        } else if ($this->media->type == 'IMAGE') {
             exec('convert '.$inputFile.' -resize 320 '.$mediaDir.'/thumbnails/'.$uuid.'.png');
         } else if ($this->media->type == 'VIDEO') {
-            exec('ffmpeg -y -loglevel panic -i '.$inputFile.' -filter:v "thumbnail,scale=320:-2" -frames:v 1 '.$mediaDir.'/thumbnails/'.$uuid.'.png');
+            exec('ffmpeg -y -loglevel panic -i '.$inputFile.' -filter:v "thumbnail,scale=480:-2" -frames:v 1 '.$mediaDir.'/thumbnails/'.$uuid.'.png');
         }
         echo '[ OKAY ]'.PHP_EOL;
 
