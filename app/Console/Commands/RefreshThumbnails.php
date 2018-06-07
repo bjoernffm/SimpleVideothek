@@ -50,7 +50,7 @@ class RefreshThumbnails extends Command
         }
 
         foreach($medias as $media) {
-            CreateThumbnail::dispatch($media);
+            CreateThumbnail::dispatch($media)->onQueue('high');
 
             if ($media->type == 'VIDEO') {
                 CreateSeekImage::dispatch($media);

@@ -238,7 +238,7 @@ class MediasController extends Controller
 
             ProcessVideo::dispatch($media);
             if (trim($request->input('imdb_id')) != '') {
-                UpdateImdbDetails::dispatch($media);
+                UpdateImdbDetails::dispatch($media)->onQueue('high');
             }
         } else if ($media->type == 'IMAGE') {
             if (!$request->file('media')->isValid()) {

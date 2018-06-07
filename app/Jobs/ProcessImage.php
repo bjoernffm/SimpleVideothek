@@ -53,7 +53,7 @@ class ProcessImage implements ShouldQueue
         echo '[ OKAY ]'.PHP_EOL;
 
         echo 'Dispatch thumbnail creation ';
-        CreateThumbnail::dispatch($this->media);
+        CreateThumbnail::dispatch($this->media)->onQueue('high');
         echo '[ OKAY ]'.PHP_EOL;
     }
 }
