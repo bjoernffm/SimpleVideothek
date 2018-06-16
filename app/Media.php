@@ -154,4 +154,9 @@ class Media extends Model
 
         return sprintf('%02d:%02d:%02d', $hours, $minutes, $seconds);
     }
+
+    public function tags()
+    {
+        return $this->belongsToMany('App\Tag')->withTimestamps();
+    }
 }

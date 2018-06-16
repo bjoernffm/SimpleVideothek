@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Media;
+use App\Tag;
 use Ramsey\Uuid\Uuid;
 use Illuminate\Support\Facades\DB;
 use App\Jobs\ProcessImage;
@@ -14,6 +15,7 @@ use Symfony\Component\Yaml\Yaml;
 use Symfony\Component\Yaml\Exception\ParseException;
 use finfo;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Cache;
 
 class MediasController extends Controller
 {
@@ -29,14 +31,69 @@ class MediasController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show($id, Request $request)
     {
         $media = Media::where('uuid', $id)->firstOrFail();
 
         if ($media->type == 'DIRECTORY') {
+            if ($request->input('tags') != null) {
+                $filterTags = explode(',', $request->input('tags'));
+
+                $cacheKey = $media->uuid.'_'.implode(',', $filterTags);
+                $children = Cache::remember('children_'.$cacheKey, 60, function () use ($media, $filterTags) {
+                    return $media->getChildren()->filter(function ($value, $key) use ($filterTags) {
+                        $tags = $value->tags->map(function ($item, $key) {
+                            return $item->id;
+                        })->toArray();
+
+                        foreach($filterTags as $filterTag) {
+                            if (!in_array($filterTag, $tags)) {
+                                return false;
+                            }
+                        }
+
+                        return true;
+                    });
+                });
+            } else {
+                $filterTags = [];
+                $children = Cache::remember('children_'.$media->uuid, 60, function () use ($media) {
+                    return $media->getChildren();
+                });
+            }
+
+            $cacheKey = hash('sha256', json_encode($children));
+            $tags = Cache::remember('tags_'.$cacheKey, 60, function () use ($children) {
+                $tags = [];
+
+                foreach($children as $child) {
+                    foreach($child->tags as $tag) {
+                        $tags[$tag->id] = $tag;
+                    }
+                }
+
+                return array_values($tags);
+            });
+
+            /**
+             * Highlighting the tags when selected and generate url queries
+             */
+            for($i = 0; $i < count($tags); $i++) {
+                if (in_array($tags[$i]->id, $filterTags)) {
+                    $tags[$i]->selected = true;
+                } else {
+                    $tags[$i]->selected = false;
+                }
+
+                $futureSelectedTags = $filterTags;
+                $futureSelectedTags[] = $tags[$i]->id;
+                $tags[$i]->urlQuery = implode(',', $futureSelectedTags);
+            }
+
             return view('medias.index')
                     ->with('media', $media)
-                    ->with('children', $media->getChildren());
+                    ->with('children', $children)
+                    ->with('tags', $tags);
         } else if ($media->type == 'COMIC') {
             return view('medias.show_comic')
                     ->with('media', $media)
@@ -68,7 +125,21 @@ class MediasController extends Controller
     public function edit($id)
     {
         $media = Media::where('uuid', $id)->firstOrFail();
-        return view('medias.edit.directory')->with('media', $media);
+
+        if ($media->type == 'DIRECTORY') {
+            return view('medias.edit.directory')->with('media', $media);
+        } else {
+            $tags = Tag::all();
+
+            $selectedTags = $media->tags->map(function ($tag) {
+                return $tag->id;
+            })->toArray();
+
+            return view('medias.edit.video')
+                    ->with('media', $media)
+                    ->with('selectedTags', $selectedTags)
+                    ->with('tags', $tags);
+        }
     }
 
     /**
@@ -94,9 +165,18 @@ class MediasController extends Controller
             Storage::delete('media/thumbnails/'.$media->thumbnail);
             Storage::copy('media/thumbnails/'.$original, 'media/thumbnails/'.$media->thumbnail);
             $media->save();
+        } else if ($media->type == 'VIDEO') {
+            $this->validate($request, [
+                'title' => 'required'
+            ]);
+
+            $media->tags()->sync($request->input('tags'));
+
+            $media->title = $request->input('title');
+            $media->save();
         }
 
-        return redirect()->action('MediasController@index');
+        return redirect()->action('MediasController@show', [$media->uuid]);
     }
 
     /**

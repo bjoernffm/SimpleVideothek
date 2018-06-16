@@ -37,6 +37,12 @@
             <h4>Cast:</h4>
             <p>{{$imdb_details->Actors}}</p>
         @endif
+        <h3>Tags</h3>
+        @foreach($media->tags as $tag)
+            <a class="btn btn-sm btn-info" href="#">{{$tag->name}}</a>
+        @endforeach
+        <h3>Additional</h3>
+        <a class="btn btn-sm btn-primary" href="{{action('MediasController@edit', ['id' => $media->uuid])}}">edit</a>
     </div>
 </div>    
 @endsection

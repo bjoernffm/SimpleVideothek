@@ -16,6 +16,21 @@
 </div>
 
 @if(count($children) > 0)
+<div class="row">
+    <div class="col-xs-12">
+        @foreach($tags as $tag)
+            @if($tag->selected)
+                <a class="btn btn-xs btn-success" href="#">{{$tag->name}}</a>
+            @else
+                <a class="btn btn-xs btn-default" href="{{action('MediasController@show', ['id' => $item->uuid, 'tags' => $tag->urlQuery])}}">{{$tag->name}}</a>
+            @endif
+        @endforeach
+        <a class="btn btn-xs btn-primary" href="{{action('MediasController@show', ['id' => $item->uuid])}}">Reset</a>
+    </div>
+</div>
+@endif
+
+@if(count($children) > 0)
     <p>
         <div class="row">
             @foreach($children as $child)
