@@ -15,7 +15,8 @@ class RefreshThumbnails extends Command
      * @var string
      */
     protected $signature = 'media:refresh-thumbnails
-                            {id? : The ID of the media e.g. da7fa978-148c-11e8-946f-00012e3bc7c}';
+                            {id? : The ID of the media e.g. da7fa978-148c-11e8-946f-00012e3bc7c}
+                            {--no-seekables : Wether seekable images should be not created}';
 
     /**
      * The console command description.
@@ -42,6 +43,7 @@ class RefreshThumbnails extends Command
     public function handle()
     {
         $id = $this->argument('id');
+        $seekables = $this->option('no-seekables');
 
         if ($id == null) {
             $medias = Media::all();
@@ -52,7 +54,7 @@ class RefreshThumbnails extends Command
         foreach($medias as $media) {
             CreateThumbnail::dispatch($media)->onQueue('high');
 
-            if ($media->type == 'VIDEO') {
+            if ($media->type == 'VIDEO' and $seekables == false) {
                 CreateSeekImage::dispatch($media);
             }
         }
