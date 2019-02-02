@@ -25,7 +25,16 @@
                 To view this video please enable JavaScript, and consider upgrading to a web browser that
                 <a href="http://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a>
             </p>
-        </video>   
+        </video>
+        <div style="padding: 0 90px 0 85px;">
+        <table style="width: 100%;">
+            <tr>
+                @foreach($chunks as $chunk)
+                <td style="background-color: rgb(0,{{($chunk*200)}},0); width: 1%; height: 10px;"></td>
+                @endforeach
+            </tr>
+        </table>
+        </div>
     </div>
     <div class="col-sm-4">
         <h3>Details</h3>
@@ -54,5 +63,29 @@
         spriteUrl: "{{ asset('assets/seek_thumbnails/'.$media->thumbnail) }}",
         stepTime: 15
     });
+
+    var loop, start, end;
+
+    player.on('play', function() {
+        start = player.currentTime();
+
+        loop = setInterval(function(){
+            end = player.currentTime();
+
+            $.post(
+                "{{action('VideoStatisticRecordController@store', ['media' => $media->uuid])}}",
+                {user_id: {{ Auth::user()->id }}, from: start, to: end},
+                function( data ) {}
+            );
+
+            start = player.currentTime();
+        }, 10000);
+    });
+
+    player.on('pause', function() {
+        clearInterval(loop);
+    });
+
+
 @endsection
 

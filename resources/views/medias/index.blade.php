@@ -67,3 +67,10 @@
     </p>
 @endif
 @endsection
+
+@section('javascript')
+    $(".lazy").lazy({
+        effect: "fadeIn",
+        effectTime: 300
+    });
+@endsection

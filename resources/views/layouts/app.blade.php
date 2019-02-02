@@ -90,23 +90,6 @@
                 ellipsis: " ..."
             });
 
-            $(".lazy").lazy({
-                effect: "fadeIn",
-                effectTime: 300
-            });
-
-            $('.comic_carousel').slick({
-                accessibility: true,
-                dots: true,
-                infinite: false,
-                arrows: true,
-                adaptiveHeight: true,
-                speed: 300,
-                slidesToShow: 1,
-                centerMode: true,
-                variableWidth: true
-            });
-
             @yield('javascript')
         });
     </script>

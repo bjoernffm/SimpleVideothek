@@ -22,7 +22,7 @@ class MediasController extends Controller
 
     public function index()
     {
-        return $this->show('da7fa978-148c-11e8-946f-00012e3bc7c6');
+        return $this->show('da7fa978-148c-11e8-946f-00012e3bc7c6', new Request());
     }
 
     /**
@@ -99,8 +99,35 @@ class MediasController extends Controller
                     ->with('media', $media)
                     ->with('children', $media->getChildren());
         } else {
+            $records = DB::table('video_statistic_records')
+                ->where('media_id', $media->id)
+                ->get();
+
+            $chunks = [];
+            for($i = 0; $i < 100; $i++) {
+                $chunks[$i] = 0;
+            }
+
+            foreach($records as $record) {
+                $from = round((($record->from/$media->length)*100));
+                $to = round((($record->to/$media->length)*100));
+
+                for($i = $from; $i < $to; $i++) {
+                    $chunks[$i]++;
+                }
+            }
+
+            $max = max($chunks);
+
+            if($max > 0) {
+                for($i = 0; $i < 100; $i++) {
+                    $chunks[$i] = $chunks[$i]/$max;
+                }
+            }
+
             return view('medias.show_video')
                     ->with('media', $media)
+                    ->with('chunks', $chunks)
                     ->with('imdb_details', json_decode($media->imdb_details));
         }
     }
@@ -175,6 +202,8 @@ class MediasController extends Controller
             $media->title = $request->input('title');
             $media->save();
         }
+
+        Cache::flush();
 
         return redirect()->action('MediasController@show', [$media->uuid]);
     }
@@ -341,6 +370,8 @@ class MediasController extends Controller
 
             ProcessImage::dispatch($media);
         }
+
+        Cache::flush();
 
         return redirect()->action('MediasController@create');
     }
