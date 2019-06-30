@@ -11,13 +11,11 @@
 |
 */
 
-Route::get('/', function () {
-    return view('pages.index');
-});
+Auth::routes();
+Route::get('/', 'MediasController@index');
 
 Route::resource('/videos', 'VideosController');
 Route::resource('/media', 'MediasController');
-Route::get('/assets/{type}/{file}', 'AssetsController@returnMedia');
-Auth::routes();
+Route::get('/assets/{type}/{file}', 'AssetsController@returnMedia')->name('assets_thing');
 
 Route::get('/home', 'HomeController@index')->name('home');

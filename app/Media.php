@@ -5,6 +5,7 @@ namespace App;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Cache;
 
 class Media extends Model
 {
@@ -158,5 +159,22 @@ class Media extends Model
     public function tags()
     {
         return $this->belongsToMany('App\Tag')->withTimestamps();
+    }
+
+    public function recommendedMedia()
+    {
+        if (!Cache::has('recommendated_media_'.$this->id)) {
+            return [];
+        }
+
+        $result = Cache::get('recommendated_media_'.$this->id);
+        $ids = array_keys($result);
+
+        $medias = Media::find($ids);
+        for($i = 0; $i < count($medias); $i++) {
+            $medias[$i]->confidence = $result[$medias[$i]->id];
+        }
+
+        return $medias->sortByDesc('confidence');
     }
 }

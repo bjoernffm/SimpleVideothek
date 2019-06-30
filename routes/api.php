@@ -13,8 +13,9 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
+/*Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
-});
+});*/
 
-Route::post('/media/{media_id}/stats', 'VideoStatisticRecordController@store');
+Route::post('/pusher/auth', 'PusherController@auth')->middleware('auth:api');
+Route::post('/media/{media_id}/stats', 'VideoStatisticRecordController@store')->middleware('auth:api');

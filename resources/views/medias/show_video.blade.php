@@ -37,10 +37,8 @@
         </div>
     </div>
     <div class="col-sm-4">
-        <h3>Details</h3>
-        @if ($imdb_details == null)
-            <p>No additional information available</p>
-        @else
+        @if ($imdb_details != null)
+            <h3>Details</h3>
             <p>{{$imdb_details->Year}} | {{$imdb_details->Genre}}</p>
             <p>{{$imdb_details->Plot}}</p>
             <h4>Cast:</h4>
@@ -50,6 +48,32 @@
         @foreach($media->tags as $tag)
             <a class="btn btn-sm btn-info" href="#">{{$tag->name}}</a>
         @endforeach
+
+        <h3>Recommended</h3>
+        <div class="row">
+        @foreach($media->recommendedMedia() as $item)
+            @if ($loop->index > 2)
+                @break
+            @endif
+            <div class="col-sm-4">
+                <a href="{{action('MediasController@show', ['id' => $item->uuid])}}">
+                    <div
+                        class="lazy"
+                        @if($item->status != 'FINISHED')
+                            data-src="{{ asset('assets/thumbnails/processing_video.png') }}"
+                        @else
+                            data-src="{{ asset('assets/thumbnails/'.$item->thumbnail) }}"
+                        @endif
+                        style="
+                            background-position: 50% 50%;
+                            background-size: cover;
+                            height: 100px;"></div>
+                    <div class="title truncate" title="{{$item->title}}">{{$item->title}}</div>
+                </a>
+            </div>
+        @endforeach
+        </div>
+
         <h3>Additional</h3>
         <a class="btn btn-sm btn-primary" href="{{action('MediasController@edit', ['id' => $media->uuid])}}">edit</a>
     </div>
@@ -72,11 +96,15 @@
         loop = setInterval(function(){
             end = player.currentTime();
 
-            $.post(
-                "{{action('VideoStatisticRecordController@store', ['media' => $media->uuid])}}",
-                {user_id: {{ Auth::user()->id }}, from: start, to: end},
-                function( data ) {}
-            );
+            $.ajax({
+                url: "{{action('VideoStatisticRecordController@store', ['media' => $media->uuid])}}",
+                type: "post",
+                data: {user_id: {{ Auth::user()->id }}, from: start, to: end},
+                headers: {
+                    "accept": "application/json",
+                    "X-CSRF-Token": "{{ csrf_token() }}"
+                }
+            });
 
             start = player.currentTime();
         }, 10000);
@@ -86,6 +114,9 @@
         clearInterval(loop);
     });
 
-
+    $(".lazy").lazy({
+        effect: "fadeIn",
+        effectTime: 300
+    });
 @endsection
 

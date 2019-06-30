@@ -5,15 +5,16 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Cache;
 
-class detectSessions extends Command
+class detectSeries extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'media:detectSessions';
+    protected $signature = 'media:detectSeries';
 
     /**
      * The console command description.
@@ -78,9 +79,45 @@ class detectSessions extends Command
         $tmpSession['duration'] = $tmpSession['start']->diffInMinutes($tmpSession['end']);
         $sessions[] = $tmpSession;
 
+        $media = [];
         foreach($sessions as $session) {
-            echo $session['start']->format('d.m.Y H:i')."\t".$session['duration']."\t".implode(', ', $session['media']).PHP_EOL;
+            if (count($session['media']) == 1) {
+                if (!isset($media[$session['media'][0]])) {
+                    $media[$session['media'][0]] = ['none' => 0];
+                }
+                $media[$session['media'][0]]['none']++;
+            } else {
+                foreach($session['media'] as $item) {
+                    if (!isset($media[$item])) {
+                        $media[$item] = ['none' => 0];
+                    }
+
+                    foreach($session['media'] as $item2) {
+                        if ($item == $item2) {
+                            continue;
+                        }
+
+                        if (!isset($media[$item][$item2])) {
+                            $media[$item][$item2] = 0;
+                        }
+
+                        $media[$item][$item2]++;
+                    }
+                }
+            }
         }
 
+        $mediaRelative = [];
+        foreach($media as $key1 => $value1) {
+            $total = array_sum($value1);
+
+            foreach($value1 as $key2 => $value2) {
+                $mediaRelative[$key1][$key2] = $value2/$total;
+            }
+
+            arsort($mediaRelative[$key1]);
+
+            Cache::forever('recommendated_media_'.$key1, $mediaRelative[$key1]);
+        }
     }
 }
